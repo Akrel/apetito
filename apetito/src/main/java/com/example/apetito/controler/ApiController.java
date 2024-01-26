@@ -147,7 +147,7 @@ public class ApiController {
 
         Restaurant restaurant = restaurantService.getRestaurant(id).orElseThrow(() -> new Exception("Cannot find restaurant"));
         String imageName = restaurant.getBannerUrl();
-
+//
         Resource resource = new ClassPathResource("photos/restaurant/banner/" + imageName);
         return ResponseEntity.ok().body(resource);
     }
