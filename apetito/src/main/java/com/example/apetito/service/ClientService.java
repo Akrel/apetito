@@ -1,9 +1,11 @@
 package com.example.apetito.service;
 
 import com.example.apetito.model.Client;
-import com.example.apetito.model.DishType;
 import com.example.apetito.repository.ClientRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -16,4 +18,10 @@ public class ClientService {
     public Client addClient(Client client) {
         return clientRepository.save(client);
     }
+
+    public Optional<Client> findClientByEmail(String email) {
+        return clientRepository.findByEmail(email);
+    }
+
+
 }

@@ -1,22 +1,18 @@
-package com.example.apetito.controler;
+package com.example.apetito.controller;
 
-import com.example.apetito.DataToCreateOrder;
+import com.example.apetito.dto.DataToCreateOrder;
+import com.example.apetito.dto.CartItem;
 import com.example.apetito.model.*;
-import com.example.apetito.repository.ClientRepository;
-import com.example.apetito.repository.DeliveryAddressRepository;
-import com.example.apetito.repository.DeliveryCompanyRepository;
 import com.example.apetito.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @RestController
@@ -24,10 +20,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class ApiController {
 
-    @Autowired
-    private RestaurantService restaurantService;
-    @Autowired
-    private DishTypeService dishTypeService;
+
     @Autowired
     private ProductService productService;
     @Autowired
@@ -38,45 +31,15 @@ public class ApiController {
     private ClientService clientService;
     @Autowired
     private OrderTableService orderTableService;
-
-    @GetMapping("/allRestaurants")
-    public Iterable<Restaurant> getAllRestaurants() {
-        return restaurantService.getAllRestaurant();
-    }
-
-    @GetMapping("/restaurant/{id}")
-    public Optional<Restaurant> getRestaurants(@PathVariable Long id){
-        return restaurantService.getRestaurant(id);
-    }
-    @GetMapping("/restaurant/image/{id}")
-    public ResponseEntity<Resource> getRestaurantImage(@PathVariable Long id) throws Exception {
-
-        Restaurant restaurant = restaurantService.getRestaurant(id).orElseThrow(() -> new Exception("Cannot find restaurant"));
-        String imageName = restaurant.getResultPhotoUrl();
-
-        Resource resource = new ClassPathResource("photos/restaurant/" + imageName);
-        return ResponseEntity.ok().body(resource);
-    }
-    @GetMapping("/allDishTypes")
-    public Iterable<DishType> getAllDishTypes() {
-        return dishTypeService.getAllDishTypes();
-    }
+    @Autowired
+    private OrderTableProductService orderTableProductService;
 
     @GetMapping("/menuFromRestaurant/{id}")
     public Iterable<Product> getMenuFromRestaurant(@PathVariable Long id){
         return productService.getRestaurantMenu(id);
     }
 
-    @GetMapping("/dishType/image/{id}")
-    public ResponseEntity<Resource> getDishTypeImage(@PathVariable Long id) throws Exception {
-
-        DishType dishType = dishTypeService.getDishType(id).orElseThrow(() -> new Exception("Cannot find dish type"));
-        String imageName = dishType.getPhotoUrl();
-
-        Resource resource = new ClassPathResource("photos/" + imageName);
-        return ResponseEntity.ok().body(resource);
-    }
-
+    /*
     @GetMapping("/product/image/{id}")
     public ResponseEntity<Resource> getProductImage(@PathVariable Long id) throws Exception {
 
@@ -90,6 +53,8 @@ public class ApiController {
         Resource resource = new ClassPathResource("photos/product/" + imageName);
         return ResponseEntity.ok().body(resource);
     }
+    
+     */
     @GetMapping("/deliveryCompanies")
     public Iterable<DeliveryCompany> getDeliveryCompanies(){
         return deliveryCompanyService.getAllDishTypes();
@@ -100,7 +65,7 @@ public class ApiController {
         deliveryAddressService.addDeliveryAddress(address);
     }
     @PostMapping("/createOrder")
-    public ResponseEntity<OrderTable> createOrder(@RequestBody DataToCreateOrder dataToCreateOrder) {
+    public ResponseEntity<OrderTable> createOrder(@RequestBody DataToCreateOrder dataToCreateOrder) throws Exception {
         Client client = new Client();
         client.setName(dataToCreateOrder.getName());
         client.setSurname(dataToCreateOrder.getSurname());
@@ -134,6 +99,24 @@ public class ApiController {
 
         order = orderTableService.addOrderTable(order);
 
+        if (dataToCreateOrder.getCartItems() != null) {
+            for (CartItem cartItem : dataToCreateOrder.getCartItems()) {
+
+                Optional<Product> product = productService.getProductById(cartItem.getId());
+                if (product.isPresent()) {
+                    OrderTableProduct orderProduct = new OrderTableProduct();
+                    orderProduct.setNumber(cartItem.getQuantity());
+                    orderProduct.setProduct(product.get());
+                    orderProduct.setOrder(order);
+                    orderTableProductService.addOrderTableProduct(orderProduct);
+                } else {
+                    throw new Exception("Cannot find product with ID: " + cartItem.getId());
+                }
+            }
+        } else {
+            throw new Exception("CartItem is null");
+        }
+
         return ResponseEntity.ok(order);
     }
     @PostMapping("/createClientWithoutAccount")
@@ -142,14 +125,17 @@ public class ApiController {
         return ResponseEntity.ok(client);
     }
 
-    @GetMapping("/restaurant/banner/{id}")
-    public ResponseEntity<Resource> getRestaurantBanner(@PathVariable Long id) throws Exception {
-
-        Restaurant restaurant = restaurantService.getRestaurant(id).orElseThrow(() -> new Exception("Cannot find restaurant"));
-        String imageName = restaurant.getBannerUrl();
-//
-        Resource resource = new ClassPathResource("photos/restaurant/banner/" + imageName);
-        return ResponseEntity.ok().body(resource);
+    /*
+    @PostMapping("/clients/add")
+    public ResponseEntity<?> registerClient(@RequestBody Client client) {
+        Optional<Client> existingClient = clientService.findClientByEmail(client.getEmail());
+        if (existingClient.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ten adres e-mail jest już używany.");
+        }
+        Client newClient = clientService.addClient(client);
+        return ResponseEntity.ok(newClient);
     }
+
+*/
 
 }

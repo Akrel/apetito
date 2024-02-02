@@ -15,8 +15,9 @@ public class DishTypeService {
         this.dishTypeRepository = dishTypeRepository;
     }
 
-    public void addDishType(DishType dishType) {
+    public DishType addDishType(DishType dishType) {
         dishTypeRepository.save(dishType);
+        return dishType;
     }
     public Iterable<DishType> getAllDishTypes() {
         return dishTypeRepository.findAll();

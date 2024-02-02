@@ -14,7 +14,7 @@ public class Product {
     @Column
     private String name;
     @Column
-    private Double prize;
+    private Double price;
     @Column
     private String photoUrl;
     @JoinColumn
