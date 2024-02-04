@@ -8,7 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ClientRegisterRequestManager implements RegisterRequestManager<ClientRegisterRequest> {
 
     @Override
-    public UserDetails createUserDetails(ClientRegisterRequest registerRequest, PasswordEncoder passwordEncoder) {
+    public UserDetails createUserDetails(ClientRegisterRequest registerRequest,
+                                         PasswordEncoder passwordEncoder) {
         Client client = new Client();
         client.setEmail(registerRequest.getUsername());
         client.setPassword(passwordEncoder.encode(registerRequest.getPassword()));

@@ -1,8 +1,11 @@
 package com.example.apetito.config;
 
 import com.example.apetito.config.userDetails.ClientRegisterRequestManager;
+import com.example.apetito.config.userDetails.DeliveryRegisterRequestManager;
 import com.example.apetito.config.userDetails.RegisterRequestManager;
+import com.example.apetito.config.userDetails.RestaurantRegisterRequestManager;
 import com.example.apetito.dto.ClientRegisterRequest;
+import com.example.apetito.dto.DeliveryRegisterRequest;
 import com.example.apetito.dto.RegisterRequest;
 import com.example.apetito.model.Client;
 import com.example.apetito.model.DeliveryCompanyAccount;
@@ -33,11 +36,14 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
 
-        RegisterRequestManager clientRegisterRequestManager = null;
+        RegisterRequestManager clientRegisterRequestManager;
         if (request instanceof ClientRegisterRequest) {
             clientRegisterRequestManager = new ClientRegisterRequestManager();
+        } else if (request instanceof DeliveryRegisterRequest) {
+            clientRegisterRequestManager = new DeliveryRegisterRequestManager();
+        } else{
+            clientRegisterRequestManager = new RestaurantRegisterRequestManager();
         }
-
         UserDetails userDetails = clientRegisterRequestManager.createUserDetails(request, passwordEncoder);
 
         if (userDetails instanceof RestaurantAccount restaurantAccount)
@@ -72,11 +78,11 @@ public class AuthenticationService {
         UserDetails details = clientRepository.findByEmail(request.getUsername()).orElse(null);
 
         if (details == null)
-            details = restaurantAccountRepository.findByLogin(request.getUsername()).orElse(null);
-     /*   else {
-            details = deliveryCompanyAccountRepository.findByLogin(request.getUsername()).orElseThrow(null);
+            details = restaurantAccountRepository.findByEmail(request.getUsername()).orElse(null);
+        else {
+            details = deliveryCompanyAccountRepository.findByEmail(request.getUsername()).orElseThrow(null);
         }
-*/
+
         String jwtToken = jwtService.generateToken(details);
 
         return new AuthenticationResponse(jwtToken);

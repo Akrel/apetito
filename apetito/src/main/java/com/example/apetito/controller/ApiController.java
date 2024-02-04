@@ -5,21 +5,19 @@ import com.example.apetito.dto.CartItem;
 import com.example.apetito.model.*;
 import com.example.apetito.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ApiController {
-
 
     @Autowired
     private ProductService productService;
@@ -34,11 +32,16 @@ public class ApiController {
     @Autowired
     private OrderTableProductService orderTableProductService;
 
+
     @GetMapping("/menuFromRestaurant/{id}")
     public Iterable<Product> getMenuFromRestaurant(@PathVariable Long id){
         return productService.getRestaurantMenu(id);
     }
 
+    @GetMapping("/orders/my")
+    public Iterable<OrderTable> tmpTest(){
+        return orderTableService.getOrdersByClientId(26L);
+    }
     /*
     @GetMapping("/product/image/{id}")
     public ResponseEntity<Resource> getProductImage(@PathVariable Long id) throws Exception {
@@ -55,23 +58,42 @@ public class ApiController {
     }
     
      */
+
+    @GetMapping("/orders/restaurant/{id}")
+    public List<OrderTableProduct> getAllOrdersByRestaurantId(@PathVariable Long id) {
+        return orderTableProductService.ordersForRestaurant(id);
+    }
+
     @GetMapping("/deliveryCompanies")
     public Iterable<DeliveryCompany> getDeliveryCompanies(){
         return deliveryCompanyService.getAllDishTypes();
     }
 
+    @GetMapping("/orders/deliveryCompanies/{id}")
+    public List<OrderTable> getOrdersByDeliveryCompany(@PathVariable Long id) {
+        // Wywołaj serwis lub repozytorium, aby pobrać zamówienia dostawcze dla firmy dostawczej o danym id
+        List<OrderTable> orders = orderTableService.getOrdersByDeliveryCompanyId(id);
+        return orders;
+    }
+
+    /*
+    @GetMapping("/orders/userOrders")
+    public ResponseEntity<List<OrderTable>> getOrders(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Long userId = userDetails.
+                List<OrderTable> orderTable = orderService.getOrdersByUserId(userId);
+        return ResponseEntity.ok(orderTable);
+    }
+
+     */
+
     @PostMapping("/deliveryAddress")
     public void addDeliveryAddress(@RequestBody DeliveryAddress address) {
         deliveryAddressService.addDeliveryAddress(address);
     }
-    @PostMapping("/createOrder")
+    @PostMapping("/createOrder")//do zmiany
     public ResponseEntity<OrderTable> createOrder(@RequestBody DataToCreateOrder dataToCreateOrder) throws Exception {
-        Client client = new Client();
-        client.setName(dataToCreateOrder.getName());
-        client.setSurname(dataToCreateOrder.getSurname());
-        client.setEmail(dataToCreateOrder.getEmail());
-        client.setPhoneNumber(dataToCreateOrder.getPhoneNumber());
-        client = clientService.addClient(client);
+
 
         DeliveryAddress deliveryAddress = new DeliveryAddress();
         deliveryAddress.setNIP(dataToCreateOrder.getNIP());
@@ -86,7 +108,6 @@ public class ApiController {
 
         OrderTable order = new OrderTable();
         order.setOrderDate(LocalDateTime.now());
-        order.setClient(client);
         order.setIsFinished(false);
         order.setDeliveryAddress(deliveryAddress);
         Optional<DeliveryCompany> deliveryCompany = deliveryCompanyService.getDeliveryCompanyByID(dataToCreateOrder.getDeliveryCompanyID());
@@ -118,11 +139,6 @@ public class ApiController {
         }
 
         return ResponseEntity.ok(order);
-    }
-    @PostMapping("/createClientWithoutAccount")
-    public ResponseEntity<Client> createClient(@RequestBody Client client) {
-        clientService.addClient(client);
-        return ResponseEntity.ok(client);
     }
 
     /*

@@ -1,8 +1,10 @@
 package com.example.apetito.config;
 
 
+import com.example.apetito.service.ClientService;
+import com.example.apetito.service.DeliveryCompanyAccountService;
+import com.example.apetito.service.RestaurantAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,24 +23,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    @Qualifier("userService")
-    private UserDetailsService userDetailsService;
+    private ClientService userService;
+
+    @Autowired
+    private DeliveryCompanyAccountService deliveryService;
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
 
     @Autowired
-    private AdminService adminService;
+    private RestaurantAccountService adminService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http.authorizeHttpRequests(matcherRegistry -> {
-                    matcherRegistry.requestMatchers("/auth/**").permitAll()
+                    matcherRegistry.requestMatchers("/auth/**","/api/restaurants/**","api/products/**").permitAll()
                             .requestMatchers("/api/client/**")
                             .authenticated();
                 })
-                .userDetailsService(userDetailsService)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
 
@@ -60,7 +61,11 @@ public class SecurityConfig {
                 .passwordEncoder(passwordEncoder());
 
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
+                .userDetailsService(userService)
+                .passwordEncoder(passwordEncoder());
+
+        authenticationManagerBuilder
+                .userDetailsService(deliveryService)
                 .passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder.build();
     }

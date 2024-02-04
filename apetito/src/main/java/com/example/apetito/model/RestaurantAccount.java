@@ -1,6 +1,7 @@
 package com.example.apetito.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,8 +18,9 @@ public class RestaurantAccount implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long restaurantAccountID;
-    @Column
-    private String login;
+    @Column(unique = true, nullable = false)
+    @Email
+    private String email;
     @Column
     private String password;
     @Column
@@ -31,7 +33,7 @@ public class RestaurantAccount implements UserDetails {
 
     @Override
     public String getUsername() {
-        return login;
+        return email;
     }
 
     @Override

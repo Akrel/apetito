@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface RestaurantAccountRepository extends CrudRepository<RestaurantAccount,Long> {
-    Optional<RestaurantAccount> findByLogin(String login);
+    Optional<RestaurantAccount> findByEmail(String login);
 }

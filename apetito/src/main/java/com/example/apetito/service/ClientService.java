@@ -2,26 +2,27 @@ package com.example.apetito.service;
 
 import com.example.apetito.model.Client;
 import com.example.apetito.repository.ClientRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
-public class ClientService {
+public class ClientService implements UserDetailsService {
+
     private final ClientRepository clientRepository;
 
-    public ClientService(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
-    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    public Client addClient(Client client) {
-        return clientRepository.save(client);
+        return clientRepository.findByEmail(username).orElse(null);
     }
 
     public Optional<Client> findClientByEmail(String email) {
         return clientRepository.findByEmail(email);
     }
-
-
 }
