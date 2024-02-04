@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface DeliveryCompanyAccountRepository extends CrudRepository<DeliveryCompanyAccount,Long> {
-    Optional<DeliveryCompanyAccount> findByLogin(String username);
+    Optional<DeliveryCompanyAccount> findByEmail(String username);
 }

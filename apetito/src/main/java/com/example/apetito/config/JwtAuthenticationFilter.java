@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Autowired
-    @Qualifier("userService")
+    @Qualifier("clientService")
     private UserDetailsService userDetailsService;
 
 

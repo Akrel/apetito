@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -19,19 +21,4 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-
-    /*
-    @PostMapping("/add")
-    public ResponseEntity<?> registerClient(@RequestBody Client client) {
-        Optional<Client> existingClient = clientService.findClientByEmail(client.getEmail());
-        if (existingClient.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ten adres e-mail jest już używany.");
-        }
-        // Zakodowanie hasła jest już obsługiwane w ClientService#addClient
-        Client newClient = clientService.addClient(client);
-        // Odpowiedź może zwracać tylko bezpieczne informacje o nowo utworzonym kliencie
-        return ResponseEntity.ok().body("Klient został pomyślnie zarejestrowany.");
-    }
-
-     */
 }

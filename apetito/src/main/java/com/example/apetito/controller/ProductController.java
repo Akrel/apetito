@@ -20,6 +20,11 @@ public class ProductController {
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
+
+    @GetMapping("/restaurant/{id}")
+    public Iterable<Product> getMenuFromRestaurant(@PathVariable Long id){
+        return productService.getRestaurantMenu(id);
+    }
 /*
     @GetMapping("/all")
     public Iterable<Product> getAllProducts() {

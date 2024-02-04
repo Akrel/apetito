@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/restaurants")
 @CrossOrigin(origins = "http://localhost:3000")
 public class RestaurantController {
 
@@ -31,7 +31,7 @@ public class RestaurantController {
     @GetMapping("/{id}")
     public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long id) {
         Optional<Restaurant> restaurant = restaurantService.getRestaurant(id);
-        return restaurant.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return restaurant.map(ResponseEntity::ok).orElseGet (() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/image/{id}")

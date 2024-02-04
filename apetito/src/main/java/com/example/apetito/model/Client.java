@@ -1,6 +1,7 @@
 package com.example.apetito.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +22,8 @@ public class Client implements UserDetails {
     private String name;
     @Column
     private String surname;
-    @Column
+    @Column(unique = true, nullable = false)
+    @Email
     private String email;
     @Column
     private int phoneNumber;
