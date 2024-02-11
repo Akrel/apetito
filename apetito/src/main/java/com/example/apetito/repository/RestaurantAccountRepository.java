@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface RestaurantAccountRepository extends CrudRepository<RestaurantAccount,Long> {
     Optional<RestaurantAccount> findByEmail(String login);
+    boolean existsByEmail(String email);
 }

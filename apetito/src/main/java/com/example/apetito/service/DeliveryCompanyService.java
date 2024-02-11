@@ -17,7 +17,7 @@ public class DeliveryCompanyService {
     public Optional<DeliveryCompany> getDeliveryCompanyByID(Long id){
         return deliveryCompanyRepository.findById(id);
     }
-    public Iterable<DeliveryCompany> getAllDishTypes() {
+    public Iterable<DeliveryCompany> getAllDeliveryCompanies() {
         return deliveryCompanyRepository.findAll();
     }
 }

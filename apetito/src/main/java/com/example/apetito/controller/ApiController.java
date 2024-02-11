@@ -1,9 +1,11 @@
 package com.example.apetito.controller;
 
+import com.example.apetito.config.JwtService;
 import com.example.apetito.dto.DataToCreateOrder;
 import com.example.apetito.dto.CartItem;
 import com.example.apetito.model.*;
 import com.example.apetito.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +22,13 @@ import java.util.Optional;
 public class ApiController {
 
     @Autowired
+    private JwtService jwtService;
+    @Autowired
     private ProductService productService;
     @Autowired
     private DeliveryCompanyService deliveryCompanyService;
     @Autowired
-    private DeliveryAddressService deliveryAddressService;
+    private DeliveryAddressService deliveryAddressService;  
     @Autowired
     private ClientService clientService;
     @Autowired
@@ -32,15 +36,17 @@ public class ApiController {
     @Autowired
     private OrderTableProductService orderTableProductService;
 
-
     @GetMapping("/menuFromRestaurant/{id}")
     public Iterable<Product> getMenuFromRestaurant(@PathVariable Long id){
         return productService.getRestaurantMenu(id);
     }
 
-    @GetMapping("/orders/my")
-    public Iterable<OrderTable> tmpTest(){
-        return orderTableService.getOrdersByClientId(26L);
+    @GetMapping("/clients/orders/all")
+    public Iterable<OrderTable> getAllClientOrders(HttpServletRequest request) throws Exception{
+        String token = request.getHeader("Authorization").substring(7);
+        String email = jwtService.extractUsername(token);
+        return orderTableService.getOrdersByClientId(clientService.findClientIdByEmail(email).orElseThrow(()->
+                new Exception("Cannot find client")));
     }
     /*
     @GetMapping("/product/image/{id}")
@@ -66,7 +72,7 @@ public class ApiController {
 
     @GetMapping("/deliveryCompanies")
     public Iterable<DeliveryCompany> getDeliveryCompanies(){
-        return deliveryCompanyService.getAllDishTypes();
+        return deliveryCompanyService.getAllDeliveryCompanies();
     }
 
     @GetMapping("/orders/deliveryCompanies/{id}")
@@ -91,7 +97,7 @@ public class ApiController {
     public void addDeliveryAddress(@RequestBody DeliveryAddress address) {
         deliveryAddressService.addDeliveryAddress(address);
     }
-    @PostMapping("/createOrder")//do zmiany
+    @PostMapping("/createOrder")
     public ResponseEntity<OrderTable> createOrder(@RequestBody DataToCreateOrder dataToCreateOrder) throws Exception {
 
 

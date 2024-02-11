@@ -3,14 +3,13 @@ package com.example.apetito.dto;
 import lombok.*;
 
 //todo
-@Getter
+@Data
+@Builder
 @Setter
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-public abstract class RegisterRequest {
-
+@AllArgsConstructor
+public class AuthenticationRequest {
     private String username;
     private String password;
-
-
 }
