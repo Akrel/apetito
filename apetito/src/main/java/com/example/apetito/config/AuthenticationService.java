@@ -4,6 +4,7 @@ import com.example.apetito.config.userDetails.ClientRegisterRequestManager;
 import com.example.apetito.config.userDetails.DeliveryRegisterRequestManager;
 import com.example.apetito.config.userDetails.RegisterRequestManager;
 import com.example.apetito.config.userDetails.RestaurantRegisterRequestManager;
+import com.example.apetito.dto.AuthenticationRequest;
 import com.example.apetito.dto.ClientRegisterRequest;
 import com.example.apetito.dto.DeliveryRegisterRequest;
 import com.example.apetito.dto.RegisterRequest;
@@ -35,7 +36,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-
         RegisterRequestManager clientRegisterRequestManager;
         if (request instanceof ClientRegisterRequest) {
             clientRegisterRequestManager = new ClientRegisterRequestManager();
@@ -63,7 +63,7 @@ public class AuthenticationService {
 
         String jwtToken = jwtService.generateToken(extraclaims, userDetails);
 
-        return new AuthenticationResponse(jwtToken);
+        return new AuthenticationResponse(jwtToken, "Rejestracja zakończona powodzeniem");
     }
 
 
@@ -74,18 +74,19 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
+//todo
+        if(!(authentication.getPrincipal() instanceof UserDetails details))
+            throw new Exception("Cannot find user");
 
-        UserDetails details = clientRepository.findByEmail(request.getUsername()).orElse(null);
+        Map<String, Object> extraclaims = new HashMap<>();
+        details.getAuthorities().stream().forEach(authority -> {
+            extraclaims.put("authority", authority);
+        });
 
-        if (details == null)
-            details = restaurantAccountRepository.findByEmail(request.getUsername()).orElse(null);
-        else {
-            details = deliveryCompanyAccountRepository.findByEmail(request.getUsername()).orElseThrow(null);
-        }
 
-        String jwtToken = jwtService.generateToken(details);
-
-        return new AuthenticationResponse(jwtToken);
+        String jwtToken = jwtService.generateToken(extraclaims, details);
+        //String jwtToken = jwtService.generateToken(details);
+        return new AuthenticationResponse(jwtToken,"Logowanie zakończone powodzeniem");
     }
 
 }

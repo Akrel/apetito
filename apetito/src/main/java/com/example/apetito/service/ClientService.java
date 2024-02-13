@@ -10,12 +10,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class ClientService implements UserDetailsService {
 
     private final ClientRepository clientRepository;
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -24,5 +23,12 @@ public class ClientService implements UserDetailsService {
 
     public Optional<Client> findClientByEmail(String email) {
         return clientRepository.findByEmail(email);
+    }
+
+    public boolean existsByEmail(String email){
+        return clientRepository.existsByEmail(email);
+    }
+    public Optional<Long> findClientIdByEmail(String email) {
+        return clientRepository.findClientClientIDByEmail(email);
     }
 }

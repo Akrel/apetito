@@ -30,13 +30,20 @@ public class Client implements UserDetails {
     @Column
     private String password;
     @Column
+    //@Enumerated(EnumType.STRING)
     private Role role = Role.CLIENT;
 
     @Override
-
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
+    /*
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.getAuthorities();
+        }
+     */
 
     @Override
     public String getUsername() {

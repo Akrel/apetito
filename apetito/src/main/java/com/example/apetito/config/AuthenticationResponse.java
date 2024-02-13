@@ -1,14 +1,12 @@
 package com.example.apetito.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
-@Setter
-@Getter
+@NoArgsConstructor
+@Builder
+@Data
 public class AuthenticationResponse {
-
-    private final String jwtToken;
-
+    private String jwtToken;
+    private String message;
 }

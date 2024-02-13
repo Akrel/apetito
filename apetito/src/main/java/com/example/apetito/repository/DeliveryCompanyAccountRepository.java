@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface DeliveryCompanyAccountRepository extends CrudRepository<DeliveryCompanyAccount,Long> {
     Optional<DeliveryCompanyAccount> findByEmail(String username);
+    boolean existsByEmail(String email);
 }
