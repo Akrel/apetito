@@ -1,18 +1,19 @@
 package com.example.apetito.controller;
 
 import com.example.apetito.config.JwtService;
-import com.example.apetito.dto.DataToCreateOrder;
 import com.example.apetito.dto.CartItem;
+import com.example.apetito.dto.DataToCreateOrder;
 import com.example.apetito.model.*;
 import com.example.apetito.service.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -42,11 +43,14 @@ public class ApiController {
     }
 
     @GetMapping("/clients/orders/all")
-    public Iterable<OrderTable> getAllClientOrders(HttpServletRequest request) throws Exception{
-        String token = request.getHeader("Authorization").substring(7);
-        String email = jwtService.extractUsername(token);
-        return orderTableService.getOrdersByClientId(clientService.findClientIdByEmail(email).orElseThrow(()->
-                new Exception("Cannot find client")));
+    public Iterable<OrderTable> getAllClientOrders() throws Exception {
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+
+        UserDetails principal = (UserDetails) authentication.getPrincipal();
+
+        return orderTableService.getOrdersByClientId(clientService.findClientIdByEmail(principal.getUsername()));
     }
     /*
     @GetMapping("/product/image/{id}")

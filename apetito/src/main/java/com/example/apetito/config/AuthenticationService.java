@@ -17,6 +17,7 @@ import com.example.apetito.repository.RestaurantAccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,15 +68,15 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws Exception {
+        Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
                 )
         );
-//todo
-        if(!(authentication.getPrincipal() instanceof UserDetails details))
+
+        if (!(authenticate.getPrincipal() instanceof UserDetails details))
             throw new Exception("Cannot find user");
 
         Map<String, Object> extraclaims = new HashMap<>();

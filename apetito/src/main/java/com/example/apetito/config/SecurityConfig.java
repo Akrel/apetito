@@ -1,6 +1,7 @@
 package com.example.apetito.config;
 
 
+import com.example.apetito.model.Role;
 import com.example.apetito.service.ClientService;
 import com.example.apetito.service.DeliveryCompanyAccountService;
 import com.example.apetito.service.RestaurantAccountService;
@@ -23,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +56,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(matcherRegistry -> {
                     matcherRegistry.requestMatchers(WHITE_LIST_URL)
                             .permitAll()
-                            .requestMatchers(GET,"/api/client/orders/all").hasAuthority("CLIENT")
+                            .requestMatchers(GET, "/api/client/orders/all").hasAnyRole(Arrays.toString(Role.values()))
 
                             .anyRequest()
                             .authenticated();
@@ -83,7 +84,6 @@ public class SecurityConfig {
                 .passwordEncoder(passwordEncoder());
 
  */
-
 
 
         authenticationManagerBuilder

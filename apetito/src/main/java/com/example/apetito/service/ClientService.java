@@ -28,7 +28,8 @@ public class ClientService implements UserDetailsService {
     public boolean existsByEmail(String email){
         return clientRepository.existsByEmail(email);
     }
-    public Optional<Long> findClientIdByEmail(String email) {
-        return clientRepository.findClientClientIDByEmail(email);
+
+    public Long findClientIdByEmail(String email) {
+        return clientRepository.findByEmail(email).orElseThrow().getClientID();
     }
 }

@@ -1,8 +1,8 @@
 package com.example.apetito.controller;
 
-import com.example.apetito.dto.AuthenticationRequest;
 import com.example.apetito.config.AuthenticationResponse;
 import com.example.apetito.config.AuthenticationService;
+import com.example.apetito.dto.AuthenticationRequest;
 import com.example.apetito.dto.ClientRegisterRequest;
 import com.example.apetito.dto.DeliveryRegisterRequest;
 import com.example.apetito.dto.RestaurantRegisterRequest;
@@ -43,8 +43,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
+        try {
+            return ResponseEntity.ok(authenticationService.authenticate(request));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot login to account");
+        }
     }
 
 
